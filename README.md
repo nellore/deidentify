@@ -12,7 +12,7 @@ python date_eliminator.py -i /path/to/input/directory -o /path/to/output/directo
 To reproduce our run, `cat` the configuration file [`date_eliminator.conf`](date_eliminator.conf) into the script, as in
 ```
 cat date_eliminator.conf | python date_eliminator.py \
-    -i "/path/to/Longitudinal Assessment of Bariatric Surgery (LABS-=2) Preliminary/ASCII Database" \
+    -i "/path/to/Longitudinal Assessment of Bariatric Surgery (LABS-2) Preliminary/ASCII Database" \
     -o /path/to/output/directory
 ```
 
