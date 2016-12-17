@@ -19,4 +19,4 @@ cat date_eliminator.conf | pypy date_eliminator.py \
 ```
 
 # License
-This software is licensed under the MIT License. See LICENSE for details.
+This software is licensed under the MIT License. See [`LICENSE`](LICENSE) for details.
