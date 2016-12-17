@@ -1,8 +1,8 @@
 # deidentify
 
-Tools for deidentifying LABS consortium data.
+This repo contains tools for deidentifying LABS consortium data.
 
-`date_eliminator.py` eliminates date fields from a directory of CSV files according to user input. We applied this script to LABS consortium data (in particular, the ASCII subdirectories from the LABS 2 CD) to remove surgery operation dates, which generally had the label `SURGDATE`. On a first run, this script looks in each CSV for every column that has at least one date and asks the user whether that column should be eliminated. Its output is a new directory of CSVs with the selected dates removed as well as a configuration file that allows reproducing the run.
+`date_eliminator.py` eliminates date fields from a directory of CSV files according to user input. We applied this script to LABS consortium data (in particular, the ASCII subdirectories from the LABS 2 CD) to remove surgery operation dates, which generally had the label `SURGDATE`. On a first run, the script looks in each CSV for every column that has at least one date and asks the user whether that column should be eliminated. Its output is a new directory of CSVs with the selected date fields removed as well as a configuration file that allows reproducing the run.
 
 Usage:
 ```
