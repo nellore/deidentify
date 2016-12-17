@@ -19,7 +19,6 @@ import os
 import csv
 import datetime
 from glob import glob
-from dateutil.parser import parse
 from distutils.util import strtobool
 import errno
 
