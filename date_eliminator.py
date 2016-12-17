@@ -17,8 +17,13 @@ import argparse
 import sys
 import os
 import csv
+import datetime
 from glob import glob
 from dateutil.parser import parse
+from distutils.util import strtobool
+import errno
+
+_date_formats = ['%m/%d/%Y', '%d/%m/%Y']
 
 def is_date(field):
     """ Checks if a field is a date 
@@ -27,13 +32,15 @@ def is_date(field):
 
         Return value: True iff Python successfully parses date
     """
-    try: 
-        parse(field)
-        return True
-    except ValueError:
-        return False
+    for date_format in _date_formats:
+        try:
+            datetime.datetime.strptime(field, date_format)
+            return True
+        except ValueError:
+            pass
+    return False
 
-def yes_no_question(self, question, yes=False):
+def yes_no_question(question, yes=False):
     """ Gets a yes/no answer from the user if self.yes is not True.
 
         question: string with question to be printed to console
@@ -44,9 +51,6 @@ def yes_no_question(self, question, yes=False):
     if yes:
         print '%s [y/n]: y' % question
         return True
-    else:
-        print '%s [y/n]: n' % question
-        return False
     while True:
         sys.stdout.write('%s [y/n]: ' % question)
         try:
@@ -74,35 +78,41 @@ if __name__ == '__main__':
                  'found'
         )
     args = parser.parse_args()
-    args.format = args.format.lower()
     try:
         os.makedirs(args.output_dir)
     except OSError as e:
-        if e.errno != e.EEXIST:
+        if e.errno != errno.EEXIST:
             raise
     # Use sorted input file list to ensure reproducibility
     csv_list = sorted(glob(os.path.join(args.input_dir, '*')))
     with open(
             os.path.join(args.output_dir, 'date_eliminator.conf'), 'w'
         ) as conf_stream:
-        for csv in input_csv_list:
-            with open(csv) as csv_stream:
-                dialect = csv.Sniffer().sniff(csv_stream.read(1024))
+        for csv_file in csv_list:
+            with open(csv_file) as csv_stream:
+                try:
+                    dialect = csv.Sniffer().sniff(csv_stream.read(1000000))
+                except csv.Error as e:
+                    print >>sys.stderr, (
+                            'Could not determine delimiter for "{}"; '
+                            'skipping....'
+                        ).format(csv_file)
                 csv_stream.seek(0)
                 csv_reader = csv.reader(csv_stream, dialect)
                 header = csv_reader.next()
                 date_columns = set()
                 # Get all columns with dates and store in date_columns
-                for tokens in csv_stream:
+                for tokens in csv_reader:
                     for i, token in enumerate(tokens):
                         if is_date(token):
                             date_columns.add(i)
                 to_eliminate = set()
                 # Ask user which columns to eliminate and store in to_eliminate
-                for index in date_columns:
+                for index in sorted(list(date_columns)):
                     if yes_no_question(
                             ('Eliminate all dates corresponding to field "{}" '
-                             'in file "{}"?').format(header[index], csv)
+                             'in file "{}"?').format(header[index], csv_file),
+                            yes=args.yes
                         ):
                         print >>conf_stream, 'y'
                         to_eliminate.add(index)
@@ -111,8 +121,9 @@ if __name__ == '__main__':
                 # Write final columns to same filename in output directory
                 csv_stream.seek(0)
                 with open(
-                        os.path.join(args.output_dir, os.path.basename(csv)),
-                        'w'
+                        os.path.join(
+                                args.output_dir, os.path.basename(csv_file)
+                            ), 'w'
                     ) as output_stream:
                     csv_writer = csv.writer(output_stream, dialect)
                     for row in csv_reader:
