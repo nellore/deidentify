@@ -189,8 +189,8 @@ if __name__ == '__main__':
                     csv_writer = csv.writer(output_stream, dialect)
                     for row in csv_reader:
                         csv_writer.writerow([
-                                tokens[i] if i not in to_eliminate
-                                    else (tokens[i].rpartition('/')[-1]
-                                           if i in to_tweak else tokens[i])
+                                (row[i].rpartition('/')[-1]
+                                    if i in to_tweak else row[i])
                                     for i in xrange(len(row))
+                                    if i not in to_eliminate
                             ])
