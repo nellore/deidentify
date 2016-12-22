@@ -7,8 +7,11 @@ We applied this script to LABS consortium data (in particular, ASCII
 subdirectories from the LABS 2 CD)  to remove surgery operation dates. On a
 first run, the script looks in each CSV for every column that has at least one
 date and asks the user whether that column should be eliminated. Its output is
-a new directory of CSVs with the selected dates removed as well as a
-configuration file that permits reproducing the run.
+a new directory of CSVs with the selected dates removed, a
+configuration file (date_eliminator.conf) that permits reproducing the run, and
+a TSV (eliminated_fields.tsv) whose first column lists fields eliminated and
+whose second column lists the corresponding files from which the fields were
+eliminated.
 
 To reproduce the run, cat the configuration file "date_eliminator.conf" written
 to the output directory into the script.
@@ -108,7 +111,10 @@ if __name__ == '__main__':
     csv_list = sorted(glob(os.path.join(args.input_dir, '*')))
     with open(
             os.path.join(args.output_dir, 'date_eliminator.conf'), 'w'
-        ) as conf_stream:
+        ) as conf_stream, open(
+            os.path.join(args.output_dir, 'eliminated_fields.tsv'), 'w'
+        ) as eliminated_stream:
+        print >>eliminated_stream, 'eliminated field\tfilename'
         for csv_file in csv_list:
             with open(csv_file) as csv_stream:
                 try:
@@ -136,6 +142,9 @@ if __name__ == '__main__':
                             yes=args.yes
                         ):
                         print >>conf_stream, 'y'
+                        print >>eliminated_stream, '\t'.join(
+                                [header[index], os.path.basename(csv_file)]
+                            )
                         to_eliminate.add(index)
                     else:
                         print >>conf_stream, 'n'
