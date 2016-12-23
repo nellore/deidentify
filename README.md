@@ -35,7 +35,7 @@ and
 for i in $(ls | grep -v SW_); do echo $i; echo '*****'; cut -d',' -f2- $i \
     | grep "[0-9][0-9]*/[0-9][0-9]*"; done | less
 ```
-to search for residual expressions of the form `[NUMBER]/[NUMBER]` and `[NUMBER]-[NUMBER]` in all fields besides `FORMV`. We uncovered many instances corresponding to dates in free text fields, and we used [Sublime Text 3](https://www.sublimetext.com/) to replace them with the text "[REDACTED]". We also manually inspected `DIB.csv`, using Sublime Text to replace potentially identifying keywords from occupations in the `EMPS` field with the text "[REDACTED]". Including scripts to reproduce these replacements would have required putting identifying information in this repo, which explains why our results are only partially reproducible.
+to search for residual expressions of the form `[NUMBER]/[NUMBER]` and `[NUMBER]-[NUMBER]` in all fields besides `FORMV`. We uncovered many instances corresponding to dates in free text fields, and we used [Sublime Text 3](https://www.sublimetext.com/) to replace them with the text "[REDACTED]". We also manually inspected `DIB.csv` and `RSI.csv`, using Sublime Text to replace potentially identifying keywords from occupations in the `EMPS` field and study withdrawal reasons in the `*REAS*` fields with the text "[REDACTED]". Including scripts to reproduce these replacements would have required putting identifying information in this repo, which explains why our results are only partially reproducible.
 
 # License
 This software is licensed under the MIT License. See [`LICENSE`](LICENSE) for details.
