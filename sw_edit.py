@@ -99,7 +99,7 @@ if __name__ == '__main__':
                     'Could not determine delimiter for SW_SUMMARY.csv; '
                     'skipping....'
                 )
-        csv_stream.seek(0)
+        summary_stream.seek(0)
         csv_reader = csv.reader(summary_stream, dialect)
         ''' Print header; note field 8 is excluded because it's day of week,
         which is more specific than year.'''
@@ -107,7 +107,7 @@ if __name__ == '__main__':
                 csv_reader.next()
             ) if i != 8])
         for tokens in csv_reader:
-            print ','.join(tokens[:6] + [
+            print >>output_stream, ','.join(tokens[:6] + [
                         tokens[6].rpartition('/')[-1],
                         tokens[7].rpartition('/')[-1]
                     ] + tokens[9:]
