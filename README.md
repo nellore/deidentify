@@ -11,7 +11,7 @@ Usage:
 pypy date_eliminator.py -i /path/to/input/directory -o /path/to/output/directory
 ```
 
-To reproduce our run, `cat` the configuration file [`date_eliminator.conf`](date_eliminator.conf) into the script, as in
+Most of our deidentification is reproducible. To perform reproducible steps, `cat` the configuration file [`date_eliminator.conf`](date_eliminator.conf) into the script, as in
 ```
 cat date_eliminator.conf | pypy date_eliminator.py \
     -i "/path/to/Longitudinal Assessment of Bariatric Surgery (LABS-2) Preliminary/ASCII Database" \
@@ -24,6 +24,18 @@ We handled `SW_MINUTE.csv` and `SW_SUMMARY.csv` separately. In particular, in `S
 pypy sw_edit.py -i /path/to/input/directory -o /path/to/output/directory
 ```
 using the same input and output directories as for `date_eliminator.py`.
+
+After running both `date_eliminator.py` and `sw_conf.py`, we navigated to `/path/to/output/directory` and ran
+```
+for i in $(ls | grep -v SW_); do echo $i; echo '*****'; cut -d',' -f2- $i \
+    | grep "[0-9][0-9]*\-[0-9][0-9]*"; done | less
+```
+and
+```
+for i in $(ls | grep -v SW_); do echo $i; echo '*****'; cut -d',' -f2- $i \
+    | grep "[0-9][0-9]*/[0-9][0-9]*"; done | less
+```
+to search for residual expressions of the form `[NUMBER]/[NUMBER]` and `[NUMBER]-[NUMBER]` in all fields besides `FORMV`. We uncovered many instances corresponding to dates in free text fields, and we used [Sublime Text 3](https://www.sublimetext.com/) to replace them with the text "[REDACTED]". We also manually inspected `DIB.csv`, using Sublime Text to replace potentially identifying keywords from occupations in the `EMPS` field with the text "[REDACTED]". Including scripts to reproduce these replacements would have required putting identifying information in this repo, which explains why our results are only partially reproducible.
 
 # License
 This software is licensed under the MIT License. See [`LICENSE`](LICENSE) for details.
